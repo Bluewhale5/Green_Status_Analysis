@@ -1,0 +1,161 @@
+---
+title: "Analysis"
+author: "Anonymous"
+date: "2024-01-30"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Organising and cleaning data
+
+Setting the working directory as "Analysis" folder (**please adjust to suit your working directory**):
+
+```{r}
+setwd("~/1) MBiol Project/Green_Status_Analysis/Analysis")
+```
+
+
+Loading in libraries, data, and functions:
+
+```{r, warning = FALSE, message = FALSE}
+source("Functions/Libraries.r")
+SpeciesData <- read.csv("Data/CF_Data.csv")
+```
+
+
+Cleaning data:
+
+```{r}
+#Removing rows which don't include an SRS value.
+SRSData <- SpeciesData %>% drop_na(SRS)
+
+#Adding columns for the log of Average Adult Body Mass and Home Range Size.
+SRSData <- mutate(SRSData, logBM = log(Avg_ABM))
+SRSData <- mutate(SRSData, logHR = log(HR))
+
+#Crearing a new data set which only includes Felidae species.
+CatData <- SRSData %>%filter(Family == "Felidae")
+```
+
+# Testing predictors for normality and colinearity (20 Felidae species):
+
+# Testing for colinearity between the continuous variables
+
+```{r}
+#Producing plots to test for correlations in the continuous predictors
+y <- c("Avg_ABM", "HR", "GL")
+pairs(CatData[,y])
+```
+
+Testing for normality in the predictor variables (Shapiro-Wilk)
+
+```{r}
+#Testing the normality of the variables
+shapiro.test(CatData$Avg_ABM)
+shapiro.test(CatData$HR)
+shapiro.test(CatData$GL)
+```
+
+Producing plots to test for correlations in the continuous predictors (with Body Mass and Home Range logged)
+
+```{r}
+#Producing plots to test for correlations in the continuous predictors (with Body Mass and Home Range logged)
+x <- c("logBM", "logHR", "GL")
+pairs(CatData[,x])
+```
+
+Testing for normality in the predictor variables (Shapiro-Wilk)
+
+```{r}
+#Testing the normality of the variables
+shapiro.test(CatData$logBM)
+shapiro.test(CatData$logHR)
+shapiro.test(CatData$GL)
+```
+
+Testing for normality visually using QQplots
+
+```{r}
+#QQplots
+par(mfrow = c(1,3))
+qqnorm(CatData$logBM, pch = 1, frame = FALSE)
+qqline(CatData$logBM, col = "steelblue", lwd = 2)
+qqnorm(CatData$logHR, pch = 1, frame = FALSE)
+qqline(CatData$logHR, col = "steelblue", lwd = 2)
+qqnorm(CatData$GL, pch = 1, frame = FALSE)
+qqline(CatData$GL, col = "steelblue", lwd = 2)
+```
+
+Pearson correlation test for log(Average Body Mass) and log(Home Range Size) - p value and correlation estimate
+
+```{r}
+#Pearson correlation test for log(Average Body Mass) and log(Home Range Size)
+corBMHR <- cor.test(CatData$logBM, CatData$logHR, 
+                    method = "pearson")
+corBMHR$p.value
+corBMHR$estimate
+```
+
+Pearson correlation test for log(Average Body Mass) and Generation Length - p value and correlation estimate
+
+```{r}
+#Pearson correlation test for log(Average Body Mass) and Generation Length
+corBMGL <- cor.test(CatData$logBM, CatData$GL, 
+                    method = "pearson")
+corBMGL$p.value
+corBMGL$estimate
+```
+
+Pearson correlation test for Generation Length and log(Home Range Size) - p value and correlation estimate
+
+```{r}
+#Pearson correlation test for Generation Length and log(Home Range Size)
+corHRGL <- cor.test(CatData$logHR, CatData$GL, 
+                    method = "pearson")
+corHRGL$p.value
+corHRGL$estimate
+```
+
+#Testing for colinearity using ANOVA, between continuous and categorical variables
+
+```{r}
+#Testing for colinearity between log(Average Body Mass) and Red List Status / Geographic Range Size
+a1 <- aov(logBM ~ Red.List.Status, data = CatData)
+summary(a1)
+a2 <- aov(logBM ~ Geog_Range, data = CatData)
+summary(a2)
+
+#Testing for colinearity between log(Home Range) and Red List Status / Geographic Range Size
+a3 <- aov(logHR ~ Red.List.Status, data = CatData)
+summary(a3)
+a4 <- aov(logHR ~ Geog_Range, data = CatData)
+summary(a4)
+
+#Testing for colinearity between Generation Length and Red List Status / Geographic Range Size
+a5 <- aov(GL ~ Red.List.Status, data = CatData)
+summary(a5)
+a6 <- aov(GL ~ Geog_Range, data = CatData)
+summary(a6)
+```
+
+#Testing for colinearity using chi2, between categorical variables
+
+```{r}
+#Testing for colinearity between Red List Status and Geographic Range Size
+chisq.test(CatData$Red.List.Status, CatData$Geog_Range, correct=FALSE)
+```
+
+#Testing for multicolinearity using VIF
+
+```{r}
+#Creating a model including all of the predictor variables
+model_all <- lm(SRS ~ logBM + logHR + GL + Red.List.Status + Geog_Range , data=CatData)
+
+#Calculating VIF values
+vif(model_all)
+```
+
+Conclusions: There is a significant correlation between log(Home Range) and log(Average Adult Body Mass). These predictors will therefore not be included in the same models.
