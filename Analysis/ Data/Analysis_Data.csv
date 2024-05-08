@@ -1,0 +1,41 @@
+﻿Scientific_Name,Common_Name,Genus,Family,SRS,Lower,Upper,Range,SRC,Red_List_Category,BMC,litter_or_clutch_size_n,litters_or_clutches_per_y
+Canis aureus,Golden Jackal,Canis,Canidae,72.2,61.1,83.3,22.2,Moderately Depleted,Least Concern,M,3.95,1.05
+Canis latrans,Coyote,Canis,Canidae,100,66.7,100,33.3,Fully Recovered,Least Concern,M,5.605,1
+Canis lupaster,African Wolf,Canis,Canidae,66.7,66.7,100,33.3,Moderately Depleted,Least Concern,M,6,1
+Canis simensis,Ethiopian Wolf,Canis,Canidae,33.3,33.3,33.3,0,Largely Depleted,Endangered,L,4,1.1
+Canis rufus,Red Wolf,Canis,Canidae,11.1,11.1,11.1,0,Critically Depleted,Critically Endangered,L,4.5,1
+Canis lupus,Grey Wolf,Canis,Canidae,61.1,52.8,72.2,19.4,Moderately Depleted,Least Concern,L,4.98,0.82
+Chrysocyon brachyurus,Maned Wolf,Chrysocyon,Canidae,33.3,33.3,33.3,0,Largely Depleted,Near Threatened,L,3,1
+Cuon alpinus,Dhole,Cuon,Canidae,30.3,30.3,30.3,0,Largely Depleted,Endangered,L,4.3,1.05
+Lupulella mesomelas,Black-backed Jackal,Lupulella,Canidae,100,66.7,100,33.3,Fully Recovered,Least Concern,M,3.95,1
+Lupulella adustus,Side-striped Jackal,Lupulella,Canidae,100,66.7,100,33.3,Fully Recovered,Least Concern,M,4.16,1.55
+Lycaon pictus,African Wild Dog,Lycaon,Canidae,33.3,33.3,33.3,0,Largely Depleted,Endangered,L,7.495,1
+Nyctereutes procyonoides,Racoon Dog,Nyctereutes,Canidae,72.2,61.1,77.8,16.7,Moderately Depleted,Least Concern,S,6.3,1
+Otocyon megalotis,Bat-eared Fox,Otocyon,Canidae,100,66.7,100,33.3,Fully Recovered,Least Concern,S,4,2
+Speothos venaticus,Bush Dog,Speothos,Canidae,33.3,33.3,33.3,0,Largely Depleted,Near Threatened,M,4.13,2
+Urocyon littoralis,Island Fox,Urocyon,Canidae,66.7,66.7,66.7,0,Moderately Depleted,Near Threatened,S,2.385,1.05
+Vulpes zerda,Fennec Fox,Vulpes,Canidae,100,66.7,100,33.3,Fully Recovered,Least Concern,S,2.36,1
+Vulpes corsac,Corsac Fox,Vulpes,Canidae,66.7,66.7,88.9,22.2,Moderately Depleted,Least Concern,S,5,1.05
+Vulpes bengalensis,Bengal Fox,Vulpes,Canidae,66.7,60,93.3,33.3,Moderately Depleted,Least Concern,S,3.49,1.1
+Vulpes vulpes,Red Fox,Vulpes,Canidae,87.5,60.4,89.6,29.2,Slightly Depleted,Least Concern,S,4.7325,1
+Vulpes ferrilata,Tibetan Fox,Vulpes,Canidae,66.7,66.7,100,33.3,Moderately Depleted,Least Concern,S,4.71,1.05
+Felis nigripes,Black-footed Cat,Felis,Felidae,33.3,33.3,33.3,0,Largely Depleted,Vulnerable,S,1.91,4
+Felis margarita,Sand Cat,Felis,Felidae,55.6,33.3,77.8,44.5,Indeterminate,Least Concern,S,4.5,2
+Felis silvestris,European Wildcat,Felis,Felidae,55.6,44.4,72.2,27.8,Moderately Depleted,Least Concern,S,3.69,2.02
+Felis lybica,Afro-Asiatic Wildcat,Felis,Felidae,88.9,33.3,100,66.7,Indeterminate,Least Concern,S,3,2.02
+Felis bieti,Chinese Mountain Cat,Felis,Felidae,33.3,33.3,33.3,0,Largely Depleted,Vulnerable,M,3.69,2.02
+Felis chaus,Jungle Cat,Felis,Felidae,55.6,44.4,55.6,11.2,Moderately Depleted,Least Concern,M,3,2
+Lynx rufus,Bobcat,Lynx,Felidae,86.7,60,96.7,36.7,Slightly Depleted,Least Concern,M,2.53,1
+Lynx canadensis,Canada Lynx,Lynx,Felidae,79.5,79.5,79.5,0,Moderately Depleted,Least Concern,M,3.19,1
+Lynx pardinus,Iberian Lynx,Lynx,Felidae,22.2,22.2,22.2,0,Largely Depleted,Vulnerable,M,2.5,1
+Lynx lynx,Eurasian Lynx,Lynx,Felidae,63.9,52.8,75,22.2,Moderately Depleted,Least Concern,L,2.25,1
+Panthera uncia,Snow Leopard,Panthera,Felidae,55.6,44.4,66.7,22.3,Moderately Depleted,Vulnerable,L,2.12,1
+Panthera pardus,Leopard,Panthera,Felidae,33.3,33.3,33.3,0,Largely Depleted,Vulnerable,L,2.14,1
+Panthera onca,Jaguar,Panthera,Felidae,37.5,37.5,37.5,0,Largely Depleted,Near Threatened,L,2,0.5
+Panthera leo,Lion,Panthera,Felidae,41.7,41.7,41.7,0,Largely Depleted,Vulnerable,L,2.825,1
+Panthera tigris,Tiger,Panthera,Felidae,25,25,25,0,Largely Depleted,Endangered,L,2.57,0.4
+Prionailurus rubiginosus,Rusty-spotted Cat,Prionailurus,Felidae,33.3,33.3,46.7,13.4,Largely Depleted,Near Threatened,S,2.23,1.32
+Prionailurus planiceps,Flat-headed Cat,Prionailurus,Felidae,33.3,33.3,33.3,0,Largely Depleted,Endangered,S,1.5,1.32
+Prionailurus javanensis,Sunda Leopard Cat,Prionailurus,Felidae,66.7,33.3,100,66.7,Indeterminate,Least Concern,S,2.5,1.64
+Prionailurus bengalensis,Mainland Leopard Cat,Prionailurus,Felidae,88.9,66.7,100,33.3,Slightly Depleted,Least Concern,S,2.5,1.64
+Prionailurus viverrinus,Fishing Cat,Prionailurus,Felidae,33.3,22.2,33.3,11.1,Largely Depleted,Vulnerable,M,2,1
