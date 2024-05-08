@@ -1,8 +1,12 @@
 # Green-Status-Analysis
 
-This repository will contain the data, functions, and code associated with my masters research.
+This repository will contains data, functions, code, and figures associated with my masters research.
 
-Currently the repository contains:
-- Data to be analysed (in the data folder) -> this will be updated as more assessments are completed, and more predictors are added to the dataset.
-- Functions that are used (in the functions folder)
-- R markdown files to a) test for normality and colinearity in the predictors AND b) to compare predictor values for felid and canid species for statistical matching whilst selecting canid species.
+To recreate this work, please download the repository and run: Analysis_Plotting.rmd
+
+The repository contains:
+- Analysis_Plotting.rmd - R markdown file containing my code.
+- Data to be analysed (in the Data folder).
+- Functions that are used (in the Functions folder).
+- Figures produced (in the Figures folder).
+- A powerpoint files used to edit the figures, alongside the edited figures (in the Edited_Figures folder).
