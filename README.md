@@ -1,6 +1,6 @@
 # Green-Status-Analysis
 
-This repository will contains data, functions, code, and figures associated with my masters research.
+This repository contains data, functions, code, and figures associated with my masters research.
 
 To recreate this work, please download the repository and run: Analysis_Plotting.rmd
 
