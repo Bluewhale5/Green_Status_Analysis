@@ -1,0 +1,536 @@
+---
+title: "Analysis"
+author: "Anonymous"
+date: "2024-05-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Introduction
+
+This R Markdown file contains code for the analysis and plotting of data displayed in my dissertation. This file does NOT include code used to test assumptions of models.
+
+
+## Preparing data
+
+Setting the working directory as "Analysis" folder (**please adjust to suit your working directory**):
+
+```{r}
+setwd("~/1) MBiol Project/Green_Status_Analysis2/Analysis")
+```
+
+
+Loading in libraries, data, and functions:
+
+```{r, warning = FALSE, message = FALSE}
+source("Functions/Libraries.r")
+source("Functions/Functions.r")
+
+RawData <- read.csv("Data/Analysis_Data.csv")
+```
+
+
+Preparing data:
+
+```{r}
+#Function to prepare data: Adds new collumns with annual reproductive output (PARO),Species Recovery Scores as proportions, and Species Recovery Scores transformed to enable regular beta regression.
+Data <- prepare_analysis_data(RawData)
+````
+
+Reviewing the data:
+
+```{r}
+headTail(Data) #shows first and last rows
+```
+
+## Analysis
+
+
+## 1. Characterising Recovery Status between and across families
+
+
+Mean Species Recovery Score for all species:
+```{r}
+mean(Data$SRS01)
+```
+
+Standard Deviation: 
+```{r}
+SRSsd <- sd(Data$SRS01)
+SRSsd
+```
+
+Standard Error:
+```{r}
+(SRSsd/sqrt(20))
+```
+
+Mean Species Recovery Score for each Family:
+```{r}
+Fammean <- tapply(Data$SRS01,Data$Family,mean)
+Fammean
+```
+
+Standard deviation for each Family:
+```{r}
+Famsd <- tapply(Data$SRS01,Data$Family,sd)
+Famsd
+```
+
+Standard error for each Family:
+```{r}
+Famse <- (Famsd/sqrt(20))
+Famse
+```
+
+95% Confidence interval: Upper bound
+```{r}
+Famup <- Fammean + (1.96*Famse)
+Famup
+```
+
+95% Confidence interval: Lower bound
+```{r}
+Famlo <- Fammean - (1.96*Famse)
+Famlo
+```
+
+
+Plotting mean Species Recovery Score:
+
+```{r}
+DataSE <- summarySE(Data, measurevar="SRS01", groupvars=c("Family"))
+
+# Grouped by family
+tiff(filename = "Figures/SRSbyfam.tiff", width = 900, height = 900, units = "px") #saves figure below as tiff
+set.seed(104)
+ggplot(DataSE, aes(x=Family, y=SRS01, colour = Family, fill = Family)) + 
+  geom_hline(yintercept = 0.001, linetype = "dashed", color = "grey", size = 1) +
+  geom_hline(yintercept = 0.2, linetype = "dashed", color = "grey", size = 1) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "grey", size = 1) +
+  geom_hline(yintercept = 0.8, linetype = "dashed", color = "grey", size = 1) +
+  geom_hline(yintercept = 0.999, linetype = "dashed", color = "grey", size = 1) +
+    geom_point(stat="identity", size = 9, show.legend = FALSE) +
+    geom_errorbar(aes(ymin=SRS01-ci, ymax=SRS01+ci),
+                  width=.3,                    # Width of the error bars
+                  position=position_dodge(.9), size = 2, show.legend = FALSE) +
+  geom_quasirandom(data = Data, width = .2, alpha = 0.5, height = 0, size = 4.5, show.legend = FALSE) +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+	theme(text = element_text(size = 30))+
+  theme(axis.title = element_text(size=35, face = "bold"), axis.title.y = element_text(margin=margin(r=30))) +
+  scale_colour_manual(values=c("#24B14D", "#FFC107")) +
+  ylab("Mean Species Recovery Score") +
+  ylim(0,1)
+dev.off() #Final code to save as tiff
+```
+
+
+Plotting Mean Upper and Lower bounds of Species Recovery Score:
+
+```{r}
+# Upper and Lower Estimates
+
+DataUSE <- summarySE(Data, measurevar="U01", groupvars=c("Family"))
+
+DataLSE <- summarySE(Data, measurevar="L01", groupvars=c("Family"))
+
+
+# Upper
+tiff(filename = "Figures/UpperSRSbyfam.tiff", width = 900, height = 900, units = "px") #saves figure below as tiff
+set.seed(104)
+ggplot(DataUSE, aes(x=Family, y=U01, colour = Family, fill = Family)) + 
+  geom_hline(yintercept = 0.001, linetype = "dashed", color = "grey", size = 1) +
+  geom_hline(yintercept = 0.2, linetype = "dashed", color = "grey", size = 1) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "grey", size = 1) +
+  geom_hline(yintercept = 0.8, linetype = "dashed", color = "grey", size = 1) +
+  geom_hline(yintercept = 0.999, linetype = "dashed", color = "grey", size = 1) +
+    geom_point(stat="identity", size = 9, show.legend = FALSE) +
+    geom_errorbar(aes(ymin=U01-ci, ymax=U01+ci),
+                  width=.3,                    # Width of the error bars
+                  position=position_dodge(.9), size = 2, show.legend = FALSE) +
+  geom_quasirandom(data = Data, width = .2, alpha = 0.5, height = 0, size = 4.5, show.legend = FALSE) +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+	theme(text = element_text(size = 30))+
+  theme(axis.title = element_text(size=35, face = "bold"), axis.title.y = element_text(margin=margin(r=30))) +
+  scale_colour_manual(values=c("#24B14D", "#FFC107")) +
+  ylab("Mean Upper Bound of Species Recovery Score") +
+  ylim(0,1)
+dev.off() #Final code to save as tiff
+
+
+# Lower
+tiff(filename = "Figures/LowerSRSbyfam.tiff", width = 900, height = 900, units = "px") #saves figure below as tiff
+set.seed(104)
+ggplot(DataLSE, aes(x=Family, y=L01, colour = Family, fill = Family)) + 
+  geom_hline(yintercept = 0.001, linetype = "dashed", color = "grey", size = 1) +
+  geom_hline(yintercept = 0.2, linetype = "dashed", color = "grey", size = 1) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "grey", size = 1) +
+  geom_hline(yintercept = 0.8, linetype = "dashed", color = "grey", size = 1) +
+  geom_hline(yintercept = 0.999, linetype = "dashed", color = "grey", size = 1) +
+    geom_point(stat="identity", size = 9, show.legend = FALSE) +
+    geom_errorbar(aes(ymin=L01-ci, ymax=L01+ci),
+                  width=.3,                    # Width of the error bars
+                  position=position_dodge(.9), size = 2, show.legend = FALSE) +
+  geom_quasirandom(data = Data, width = .2, alpha = 0.5, height = 0, size = 4.5, show.legend = FALSE) +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+	theme(text = element_text(size = 30))+
+  theme(axis.title = element_text(size=35, face = "bold"), axis.title.y = element_text(margin=margin(r=30))) +
+  scale_colour_manual(values=c("#24B14D", "#FFC107")) +
+  ylab("Mean Lower Bound of Species Recovery Score") +
+  ylim(0,1)
+dev.off() #Final code to save as tiff
+```
+
+## 2. Testing for predictors of Recovery Status
+
+Performing beta regression model
+
+```{r}
+#model containing Family, Annual Reproductive Output, Body Mass Class, and all of their interactions
+Data$BMC <- factor(Data$BMC, levels = c("S", "M", "L"))
+BMCmodel = betareg(Data$best_trans ~ Family*BMC  + Family*PARO + PARO*BMC, data = Data)
+```
+
+Displaying outputs of the model
+
+```{r}
+summary(BMCmodel)
+```
+
+Perfoming beta regression without potential reproductive output
+
+```{r}
+Data$BMC <- factor(Data$BMC, levels = c("S", "M", "L"))
+BMCmodel2 = betareg(Data$best_trans ~ Family*BMC, data = Data)
+joint_tests(BMCmodel2)
+summary(BMCmodel2)
+```
+
+Calculating Estimated Marginal Means
+
+```{r}
+marginalFB = emmeans(BMCmodel2, ~ BMC*Family) #Calculating estimated marginal means
+```
+
+
+Plotting Estimated Marginal Means
+```{r}
+SumFB <- SumFunction(marginalFB) #Prepping EMMs for plotting
+
+SumFB$BMC <- factor(SumFB$BMC, levels = c("S", "M", "L"))
+
+tiff(filename = "Figures/BMCFamily estimated means SRS.tiff", width = 900, height = 900, units = "px") #saves figure below as tiff
+set.seed(50)
+	ggplot(SumFB,                ### The data frame to use.
+       aes(x = BMC,
+           y = emmean, colour = Family)) +
+	geom_hline(yintercept = 0.001, linetype = "dashed", color = "grey", size = 1) +
+  geom_hline(yintercept = 0.2, linetype = "dashed", color = "grey", size = 1) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "grey", size = 1) +
+  geom_hline(yintercept = 0.8, linetype = "dashed", color = "grey", size = 1) +
+  geom_hline(yintercept = 0.999, linetype = "dashed", color = "grey", size = 1) +
+  	 geom_errorbar(aes(ymin = asymp.LCL,
+                     ymax = asymp.UCL),
+                     width = 0.5,
+                     size  = 1.5, position = "dodge") +
+  	 geom_point(shape = 15,
+              size  = 10, position = position_dodge(0.5)) +
+	   geom_quasirandom(data = Data, width = .15, alpha = 0.5, size = 4, show.legend = FALSE,  dodge.width = 0.5, aes(x = BMC, y = SRS01, colour = Family)) +
+   	 theme(axis.title   = element_text(face  = "bold")) +
+	    theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+	theme(text = element_text(size = 35),  plot.margin = margin(1, 1, 1, 1, "cm"), legend.title = element_text(size=25, face="bold"), legend.text = element_text(size = 20))+
+  theme(axis.title = element_text(size=30, face = "bold"), axis.title.y = element_text(margin=margin(r=30)), axis.title.x = element_text(vjust=0), margin=margin(r=40)) +
+  scale_colour_manual(values=c("#24B14D", "#FFC107")) +
+	  scale_x_discrete(labels=c("Small", "Medium", "Large"))+
+    	 xlab("Body Mass Class") +
+	 ylab("Estimated Marginal Mean Species Recovery Score") +
+	 ylim(0,1.05) + 
+annotate("text",x = c(1.9,0.9,1.1,2.1,3.05,2.8), y = SumFB$asymp.UCL + 0.026, label = gsub("", "", SumFB$.group), size = 10)
+
+
+dev.off() #final command to save as .tiff
+```
+
+
+Repeating with Upper and Lower bounds of Species Recovery Score
+
+Upper Bound
+
+```{r}
+#Upper bound model
+Umodel = betareg(Data$upper_trans ~ Family*BMC, data = Data) 
+joint_tests(Umodel)
+summary(Umodel)
+```
+
+
+Lower Bound
+
+```{r}
+#Lower bound model
+Lmodel = betareg(Data$lower_trans ~ Family*BMC, data = Data)
+joint_tests(Lmodel)
+summary(Lmodel)
+```
+
+
+Calculating Estimated Marginal Means
+```{r}
+marginalU = emmeans(Umodel, ~ BMC*Family) #Calculating estimated marginal means
+
+SumU <- SumFunction(marginalU) #Prepping EMMs for plotting
+
+
+marginalL = emmeans(Lmodel, ~ BMC*Family) #Calculating estimated marginal means
+
+SumL <- SumFunction(marginalL) #Prepping EMMs for plotting
+```
+
+
+Plotting Estimated Marginal Means
+```{r}
+SumU$BMC <- factor(SumU$BMC, levels = c("S", "M", "L"))
+
+tiff(filename = "Figures/Upper estimated means SRS.tiff", width = 900, height = 900, units = "px") #saves figure below as tiff
+set.seed(60)
+	ggplot(SumU,                ### The data frame to use.
+       aes(x = BMC,
+           y = emmean, colour = Family)) +
+	geom_hline(yintercept = 0.001, linetype = "dashed", color = "grey", size = 1) +
+  geom_hline(yintercept = 0.2, linetype = "dashed", color = "grey", size = 1) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "grey", size = 1) +
+  geom_hline(yintercept = 0.8, linetype = "dashed", color = "grey", size = 1) +
+  geom_hline(yintercept = 0.999, linetype = "dashed", color = "grey", size = 1) +
+  	 geom_errorbar(aes(ymin = asymp.LCL,
+                     ymax = asymp.UCL),
+                     width = 0.5,
+                     size  = 1.5, position = "dodge") +
+  	 geom_point(shape = 15,
+              size  = 10, position = position_dodge(0.5)) +
+	   geom_quasirandom(data = Data, width = .1, alpha = 0.5, size = 4, show.legend = FALSE,  dodge.width = 0.5, aes(x = BMC, y = U01, colour = Family)) +
+   	 theme(axis.title   = element_text(face  = "bold")) +
+	    theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+	theme(text = element_text(size = 35),  plot.margin = margin(1, 1, 1, 1, "cm"), legend.title = element_text(size=25, face="bold"), legend.text = element_text(size = 20))+
+  theme(axis.title = element_text(size=30, face = "bold"), axis.title.y = element_text(margin=margin(r=30)), axis.title.x = element_text(vjust=0), margin=margin(r=40)) +
+  scale_colour_manual(values=c("#24B14D", "#FFC107")) +
+	  scale_x_discrete(labels=c("Small", "Medium", "Large"))+
+    	 xlab("Body Mass Class") +
+	 ylab("Estimated Marginal Mean \n Upper Bound of Species Recovery Score") +
+	 ylim(0,1.05) + 
+annotate("text",x = c(1.9, 0.9, 1.15, 2.1, 3.1, 2.8), y = SumU$asymp.UCL + 0.026, label = gsub("", "", SumU$.group), size = 10)
+
+
+dev.off() #final command to save as .tiff
+
+# LOWER
+
+SumL$BMC <- factor(SumL$BMC, levels = c("S", "M", "L"))
+
+tiff(filename = "Figures/Lower estimated means SRS.tiff", width = 900, height = 900, units = "px") #saves figure below as tiff
+set.seed(60)
+	ggplot(SumL,                ### The data frame to use.
+       aes(x = BMC,
+           y = emmean, colour = Family)) +
+	geom_hline(yintercept = 0.001, linetype = "dashed", color = "grey", size = 1) +
+  geom_hline(yintercept = 0.2, linetype = "dashed", color = "grey", size = 1) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "grey", size = 1) +
+  geom_hline(yintercept = 0.8, linetype = "dashed", color = "grey", size = 1) +
+  geom_hline(yintercept = 0.999, linetype = "dashed", color = "grey", size = 1) +
+  	 geom_errorbar(aes(ymin = asymp.LCL,
+                     ymax = asymp.UCL),
+                     width = 0.5,
+                     size  = 1.5, position = "dodge") +
+  	 geom_point(shape = 15,
+              size  = 10, position = position_dodge(0.5)) +
+	   geom_quasirandom(data = Data, width = .15, alpha = 0.5, size = 4, show.legend = FALSE,  dodge.width = 0.5, aes(x = BMC, y = L01, colour = Family)) +
+   	 theme(axis.title   = element_text(face  = "bold")) +
+	    theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+	theme(text = element_text(size = 35),  plot.margin = margin(1, 1, 1, 1, "cm"), legend.title = element_text(size=25, face="bold"), legend.text = element_text(size = 20))+
+  theme(axis.title = element_text(size=30, face = "bold"), axis.title.y = element_text(margin=margin(r=30)), axis.title.x = element_text(vjust=0), margin=margin(r=40)) +
+  scale_colour_manual(values=c("#24B14D", "#FFC107")) +
+	  scale_x_discrete(labels=c("Small", "Medium", "Large"))+
+    	 xlab("Body Mass Class") +
+	 ylab("Estimated Marginal Mean \n Lower Bound of Species Recovery Score") +
+	 ylim(0,1.05) + 
+annotate("text",x = c(0.9, 1.9, 2.1, 3.05, 1.05, 2.8), y = SumL$asymp.UCL + 0.026, label = gsub("", "", SumL$.group), size = 10)
+
+dev.off() #final command to save as .tiff
+```
+
+## 3. Testing for differences between predictors of Recovery Status and Extinction Risk
+
+Performing ordered logistic regression to test for predictors of Red List Category
+
+Body Mass Class and Family
+
+```{r}
+#model containing Family, Body Mass Class, and Potential Reproductive Output
+Data$Red_List_Category <- factor(Data$Red_List_Category, levels = c("Critically Endangered", "Endangered", "Vulnerable", "Near Threatened", "Least Concern"))
+Data$BMC <- factor(Data$BMC, levels = c("S", "M", "L"))
+
+m <- polr(Red_List_Category ~ BMC * Family, data = Data%>%  filter(!row_number() %in% c(5)), Hess=TRUE)
+joint_tests(m)
+summary(m)
+```
+
+Displaying outputs and calculating p values
+
+```{r}
+## store table
+ctable <- coef(summary(m))
+
+## calculate and store p values
+p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
+
+## combined table
+(ctable <- cbind(ctable, "p value" = p))
+```
+
+
+```{r}
+#model containing Body Mass Class
+m2 <- polr(Red_List_Category ~ BMC, data = Data%>%  filter(!row_number() %in% c(5)), Hess=TRUE)
+joint_tests(m2)
+summary(m2)
+```
+
+
+```{r}
+## store table
+ctable2 <- coef(summary(m2))
+
+## calculate and store p values
+p2 <- pnorm(abs(ctable2[, "t value"]), lower.tail = FALSE) * 2
+
+## combined table
+(ctable2 <- cbind(ctable2, "p value" = p2))
+```
+
+
+Annual Reproductive Ouput and Family
+
+```{r}
+#model containing Family, Body Mass Class, and Potential Reproductive Output
+Data$Red_List_Category <- factor(Data$Red_List_Category, levels = c("Critically Endangered", "Endangered", "Vulnerable", "Near Threatened", "Least Concern"))
+Data$BMC <- factor(Data$BMC, levels = c("S", "M", "L"))
+
+m3 <- polr(Red_List_Category ~ PARO * Family, data = Data%>%  filter(!row_number() %in% c(5)), Hess=TRUE)
+joint_tests(m3)
+summary(m3)
+```
+
+Displaying outputs and calculating p values
+
+```{r}
+## store table
+ctable3 <- coef(summary(m3))
+
+## calculate and store p values
+p3 <- pnorm(abs(ctable3[, "t value"]), lower.tail = FALSE) * 2
+
+## combined table
+(ctable3 <- cbind(ctable3, "p value" = p3))
+```
+
+
+## 4. Testing for Predictors of Uncertainty in Recovery Status
+
+Performing linear regression
+
+```{r}
+Data$BMC <- factor(Data$BMC, levels = c("S", "M", "L"))
+Data$Red_List_Category <- factor(Data$Red_List_Category, levels = c("Critically Endangered", "Endangered", "Vulnerable", "Near Threatened", "Least Concern"))
+uncertmodel <- lm(Range ~ BMC*Family + Red_List_Category, data = Data%>%  filter(!row_number() %in% c(5)))
+joint_tests(uncertmodel)
+summary(uncertmodel)
+```
+
+Calculating Estimated Marginal Means for Red List Category
+
+```{r}
+marginalUR = emmeans(uncertmodel, ~ Red_List_Category) #Calculating estimated marginal means
+
+SumUR <- SumFunction(marginalUR) #Prepping EMMs for plotting
+```
+
+Plotting Estimated Marginal Means
+
+```{r}
+tiff(filename = "Figures/UncertRed estimated means SRs.tiff", width = 650, height = 900, units = "px") #saves figure below as tiff
+
+	ggplot(SumUR,                ### The data frame to use.
+       aes(x = Red_List_Category,
+           y = emmean)) +
+	  geom_hline(yintercept=0, linetype="dashed", colour = "darkgray", size = 1.5) +
+	  #geom_quasirandom(data = Data, width = .2, alpha = 0.8, size = 4, colour = "grey", show.legend = FALSE,  dodge.width = 0.5, aes(x = Red_List_Category, y = Range)) +
+  	 geom_errorbar(aes(ymin = lower.CL,
+                     ymax = upper.CL),
+                     width = 0.5,
+                     size  = 1.2, position = "dodge") +
+  	 geom_point(shape = 15,
+              size  = 10, position = position_dodge(0.5)) +
+   	 theme(axis.title   = element_text(face  = "bold")) +
+	    theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+	theme(text = element_text(size = 35),  plot.margin = margin(1, 1, 1, 1, "cm"), legend.title = element_text(size=25, face="bold"), legend.text = element_text(size = 20))+
+  theme(axis.title = element_text(size=30, face = "bold"), axis.title.y = element_text(margin=margin(r=30)), axis.title.x = element_text(vjust=0), margin=margin(r=40)) +
+    	 xlab("Red List Category") +
+	 ylab("Uncertainty in Species Recovery Score (%)") +
+	 ylim(-20,40) + 
+	 scale_x_discrete(limits = rev(levels(SumUR$Red_List_Category)), labels=c("LC", "NT", "VU", "EN")) +
+annotate("text",x = SumUR$Red_List_Category, y = SumUR$upper.CL + 2, label = gsub("", "", SumUR$.group), size = 10)
+
+
+dev.off() #final command to save as .tiff
+```
+
+Calculating Estimated Marginal Means of Body Mass Class by Family
+
+```{r}
+marginalUBF = emmeans(uncertmodel, ~ BMC*Family) #Calculating estimated marginal means
+
+SumUBF <- SumFunction(marginalUBF) #Prepping EMMs for plotting
+```
+
+Plotting Estimated Marginal Means 
+
+```{r}
+SumUBF$BMC <- factor(SumUBF$BMC, levels = c("S", "M", "L"))
+
+tiff(filename = "Figures/UncertFamBod estimated means SRs.tiff", width = 650, height = 900, units = "px") #saves figure below as tiff
+
+	ggplot(SumUBF,                ### The data frame to use.
+       aes(x = BMC,
+           y = emmean, colour = Family)) +
+	  geom_hline(yintercept=0, linetype="dashed", color = "grey", size = 1.5) +
+  	 geom_errorbar(aes(ymin = lower.CL,
+                     ymax = upper.CL),
+                     width = 0.5,
+                     size  = 1.2, position = position_dodge(width = 0.7)) +
+  	 geom_point(shape = 15,
+              size  = 10, position = position_dodge(0.7)) +
+   	 theme(axis.title   = element_text(face  = "bold")) +
+	    theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+	theme(text = element_text(size = 35),  plot.margin = margin(1, 1, 1, 1, "cm"), legend.title = element_text(size=25, face="bold"), legend.text = element_text(size = 20))+
+  theme(axis.title = element_text(size=30, face = "bold"), axis.title.y = element_text(margin=margin(r=30)), axis.title.x = element_text(vjust=0), margin=margin(r=40)) +
+	  scale_colour_manual(values=c("#24B14D", "#FFC107")) +
+	  scale_x_discrete(labels=c("Small", "Medium", "Large"))+
+    	 xlab("Body Mass Class") +
+	 ylab("Uncertainty in Species Recovery Score (%)") +
+	 ylim(-20,40) + 
+annotate("text",x = c(1.2,1.8,0.8,3.15,2.77,2.1), y = SumUBF$upper.CL + 2, label = gsub("", "", SumUBF$.group), size = 10)
+
+
+dev.off() #final command to save as .tiff
+```
