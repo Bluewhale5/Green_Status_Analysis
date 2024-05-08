@@ -9,4 +9,4 @@ The repository contains:
 - Data to be analysed (in the Data folder).
 - Functions that are used (in the Functions folder).
 - Figures produced (in the Figures folder).
-- A powerpoint file used to edit the figures, alongside the edited figures (in the Edited_Figures folder).
+- A powerpoint file used to edit the figures, alongside the edited figures (in the Editing_Figures folder).
