@@ -39,7 +39,7 @@ Preparing data:
 ```{r}
 #Function to prepare data: Adds new collumns with annual reproductive output (PARO),Species Recovery Scores as proportions, and Species Recovery Scores transformed to enable regular beta regression.
 Data <- prepare_analysis_data(RawData)
-````
+```
 
 Reviewing the data:
 
