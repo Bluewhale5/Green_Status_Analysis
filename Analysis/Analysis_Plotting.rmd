@@ -20,7 +20,7 @@ This R Markdown file contains code for the analysis and plotting of data display
 Setting the working directory as "Analysis" folder (**please adjust to suit your working directory**):
 
 ```{r}
-setwd("~/1) MBiol Project/Green_Status_Analysis2/Analysis")
+setwd("..../Analysis")
 ```
 
 
