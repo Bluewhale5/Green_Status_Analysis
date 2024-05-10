@@ -2,7 +2,9 @@
 title: "Analysis"
 author: "Anonymous"
 date: "2024-05-07"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -20,7 +22,7 @@ This R Markdown file contains code for the analysis and plotting of data display
 Setting the working directory as "Analysis" folder (**please adjust to suit your working directory**):
 
 ```{r}
-setwd("..../Analysis")
+setwd("~/1) MBiol Project/Green_Status_Analysis2/Analysis")
 ```
 
 
@@ -46,6 +48,57 @@ Reviewing the data:
 ```{r}
 headTail(Data) #shows first and last rows
 ```
+
+Testing for normality
+
+```{r}
+qqnorm(Data$PARO, pch = 1, frame = FALSE)
+qqline(Data$PARO, col = "steelblue", lwd = 2)
+```
+
+```{r}
+shapiro.test(Data$PARO)
+```
+
+Testing for relationships between predictor variables
+
+Body mass class and annual reproductive output
+
+```{r}
+group_by(Data, BMC) %>%
+  dplyr::summarise(
+    count = n(),
+    mean = mean(PARO, na.rm = TRUE),
+    sd = sd(PARO, na.rm = TRUE)
+  )
+```
+
+```{r}
+ABP <- aov(PARO ~ BMC, data = Data)
+summary(ABP)
+```
+
+Family and annual reproductive output
+
+```{r}
+group_by(Data, Family) %>%
+  dplyr::summarise(
+    count = n(),
+    mean = mean(PARO, na.rm = TRUE),
+    sd = sd(PARO, na.rm = TRUE)
+  )
+```
+
+```{r}
+t.test(PARO ~ Family, data = Data, var.equal = TRUE)
+```
+
+Body mass class and family
+
+```{r}
+chisq.test(Data$BMC, Data$Family)
+```
+
 
 ## Analysis
 
@@ -198,6 +251,14 @@ Data$BMC <- factor(Data$BMC, levels = c("S", "M", "L"))
 BMCmodel = betareg(Data$best_trans ~ Family*BMC  + Family*PARO + PARO*BMC, data = Data)
 ```
 
+
+Testing assumptions of model
+
+```{r}
+par(mfrow = c(2,2))
+plot(BMCmodel)
+```
+
 Displaying outputs of the model
 
 ```{r}
@@ -209,6 +270,14 @@ Perfoming beta regression without potential reproductive output
 ```{r}
 Data$BMC <- factor(Data$BMC, levels = c("S", "M", "L"))
 BMCmodel2 = betareg(Data$best_trans ~ Family*BMC, data = Data)
+
+#Testing assumptions of model
+par(mfrow = c(2,2))
+plot(BMCmodel2)
+```
+
+
+```{r}
 joint_tests(BMCmodel2)
 summary(BMCmodel2)
 ```
@@ -267,6 +336,14 @@ Upper Bound
 ```{r}
 #Upper bound model
 Umodel = betareg(Data$upper_trans ~ Family*BMC, data = Data) 
+
+#Testing assumptions of model
+par(mfrow = c(2,2))
+plot(Umodel)
+```
+
+
+```{r}
 joint_tests(Umodel)
 summary(Umodel)
 ```
@@ -277,6 +354,14 @@ Lower Bound
 ```{r}
 #Lower bound model
 Lmodel = betareg(Data$lower_trans ~ Family*BMC, data = Data)
+
+#Testing assumptions of model
+par(mfrow = c(2,2))
+plot(BMCmodel2)
+```
+
+
+```{r}
 joint_tests(Lmodel)
 summary(Lmodel)
 ```
@@ -382,6 +467,7 @@ m <- polr(Red_List_Category ~ BMC * Family, data = Data%>%  filter(!row_number()
 joint_tests(m)
 summary(m)
 ```
+
 
 Displaying outputs and calculating p values
 
